@@ -37,6 +37,7 @@ if (isset($_GET['logout'])) {
 
 $error = '';
 $redirect_uri = $_GET['redirect_uri'] ?? '';
+$app_name = $_GET['app_name'] ?? 'yoSSO';
 
 // Login Logic
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -68,13 +69,13 @@ if (isset($_SESSION['yosso_user'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>yoSSO - Single Sign On</title>
+    <title><?= htmlspecialchars($app_name) ?> - Sign In</title>
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
     <div class="login-container">
         <div class="logo">
-            yoSSO
+            <?= htmlspecialchars($app_name) ?>
         </div>
         
         <?php if (!isset($_SESSION['yosso_user'])): ?>
