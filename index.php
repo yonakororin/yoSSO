@@ -1,17 +1,27 @@
 <?php
 session_start();
 
-$users_file = __DIR__ . '/data/users.json';
+$users_dir = __DIR__ . '/../mnguser/data/users/';
 $codes_file = __DIR__ . '/data/codes.json';
 
 // Initialize data files if not exist
 if (!file_exists(__DIR__ . '/data')) mkdir(__DIR__ . '/data');
-if (!file_exists($users_file)) file_put_contents($users_file, json_encode(['admin' => ['password' => 'password', 'name' => 'Admin User']]));
+// if (!file_exists($users_file)) ... (No longer creating users.json)
 if (!file_exists($codes_file)) file_put_contents($codes_file, '{}');
 
 function get_users() {
-    global $users_file;
-    return json_decode(file_get_contents($users_file), true);
+    global $users_dir;
+    $users = [];
+    if (is_dir($users_dir)) {
+        $files = glob($users_dir . '*.json');
+        foreach ($files as $file) {
+            $data = json_decode(file_get_contents($file), true);
+            if ($data && isset($data['username'])) {
+                $users[$data['username']] = $data;
+            }
+        }
+    }
+    return $users;
 }
 
 function save_code($code, $username) {
