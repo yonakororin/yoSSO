@@ -1,12 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-    --bg-color: #0f172a;
-    --card-bg: #1e293b;
-    --text-primary: #f8fafc;
-    --text-secondary: #94a3b8;
-    --accent-color: #6366f1;
-    --accent-hover: #4f46e5;
+    /* Map to shared/theme.js variables (Light Mode) */
+    --bg-color: var(--theme-bg, #f1f5f9);
+    --card-bg: var(--theme-bg-card, #ffffff);
+    --text-primary: var(--theme-text, #1e293b);
+    --text-secondary: var(--theme-text-muted, #64748b);
+
+    --accent-color: var(--theme-primary, #6366f1);
+    --accent-hover: var(--theme-primary-hover, #4f46e5);
+
     --error-color: #ef4444;
     --success-color: #22c55e;
 }
@@ -25,8 +28,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-image: radial-gradient(circle at top right, #1e1b4b, transparent 40%),
-        radial-gradient(circle at bottom left, #312e81, transparent 40%);
+    /* Removed dark gradients for light theme consistency */
 }
 
 .login-container {
@@ -60,6 +62,7 @@ body {
     font-weight: 700;
     background: linear-gradient(135deg, #a5b4fc 0%, #6366f1 100%);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     letter-spacing: -0.05em;
 }

@@ -56,6 +56,8 @@ if (file_exists($config_file)) {
 }
 $system_name = $config['system_name'] ?? 'yoSSO';
 $target_app = $_GET['app_name'] ?? '';
+$target_env = $config['target_env'] ?? 'dev';
+$base_color = $config['base_color'] ?? null;
 
 // Login Logic
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -151,5 +153,12 @@ if (isset($_SESSION['yosso_user'])) {
             }
         }
     </script>
+    <script>
+        window.mngConfig = <?= json_encode([
+            'target_env' => $target_env,
+            'base_color' => $base_color
+        ]) ?>;
+    </script>
+    <script src="../shared/theme.js"></script>
 </body>
 </html>
