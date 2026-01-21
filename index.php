@@ -47,11 +47,20 @@ if (isset($_GET['logout'])) {
 
 $error = '';
 $redirect_uri = $_GET['redirect_uri'] ?? '';
-$app_name = $_GET['app_name'] ?? 'yoSSO';
+
+// Load System Config
+$config_file = __DIR__ . '/data/config.json';
+$config = [];
+if (file_exists($config_file)) {
+    $config = json_decode(file_get_contents($config_file), true);
+}
+$system_name = $config['system_name'] ?? 'yoSSO';
+$target_app = $_GET['app_name'] ?? '';
 
 // Login Logic
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'] ?? '';
+    // ... no change needed here ...
     $password = $_POST['password'] ?? '';
     
     $users = get_users();
@@ -79,14 +88,19 @@ if (isset($_SESSION['yosso_user'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars($app_name) ?> - Sign In</title>
+    <title><?= htmlspecialchars($system_name) ?> - Sign In</title>
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
     <div class="login-container">
         <div class="logo">
-            <?= htmlspecialchars($app_name) ?>
+            <?= htmlspecialchars($system_name) ?>
         </div>
+        <?php if ($target_app && $target_app !== $system_name): ?>
+            <div style="text-align: center; margin-top: -0.5rem; margin-bottom: 2rem; color: var(--text-secondary); font-size: 0.9rem;">
+                to <?= htmlspecialchars($target_app) ?>
+            </div>
+        <?php endif; ?>
         
         <?php if (!isset($_SESSION['yosso_user'])): ?>
             <?php if ($error): ?>
@@ -112,9 +126,6 @@ if (isset($_SESSION['yosso_user'])) {
                 </div>
                 <button type="submit">Sign In</button>
             </form>
-            <div class="footer-text">
-                Protected by yoSSO Security
-            </div>
         <?php else: ?>
             <div style="text-align: center;">
                 <h2 style="margin-bottom: 1rem; color: var(--text-primary);">Welcome, <?= htmlspecialchars($_SESSION['yosso_user']) ?></h2>
