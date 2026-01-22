@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../shared/session_config.php';
 session_start();
 
 if (!isset($_SESSION['yosso_user'])) {

@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../shared/session_config.php';
 session_start();
 
 $users_dir = __DIR__ . '/../mnguser/data/users/';
@@ -154,6 +155,7 @@ if (isset($_SESSION['yosso_user'])) {
         }
     </script>
     <script>
+        window.currentUser = "<?= isset($_SESSION['yosso_user']) ? htmlspecialchars($_SESSION['yosso_user']) : '' ?>";
         window.mngConfig = <?= json_encode([
             'target_env' => $target_env,
             'base_color' => $base_color
