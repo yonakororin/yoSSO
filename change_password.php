@@ -60,7 +60,7 @@ $redirect_back = $_GET['redirect_uri'] ?? 'index.php';
             <div class="error-message" style="color: var(--success-color); background: rgba(34, 197, 94, 0.1); border-color: rgba(34, 197, 94, 0.2);">
                 <?= htmlspecialchars($message) ?>
             </div>
-            <a href="<?= htmlspecialchars($redirect_back) ?>"><button>Return to App</button></a>
+            <a href="<?= htmlspecialchars($redirect_back) ?>"><button>Back to Previous Screen</button></a>
         <?php else: ?>
             <?php if ($error): ?>
                 <div class="error-message">
