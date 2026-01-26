@@ -7,7 +7,8 @@ if (!isset($_SESSION['yosso_user'])) {
     exit;
 }
 
-$users_dir = __DIR__ . '/../mnguser/data/users/';
+// Use yoSSO's own user data file
+$users_file = __DIR__ . '/data/users.json';
 $message = '';
 $error = '';
 
@@ -17,25 +18,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $confirm_password = $_POST['confirm_password'] ?? '';
 
     $username = $_SESSION['yosso_user'];
-    $user_file = $users_dir . $username . '.json';
 
-    if (!file_exists($user_file)) {
-        $error = 'User file not found.';
+    if (!file_exists($users_file)) {
+        $error = 'Users file not found.';
     } else {
-        $user_data = json_decode(file_get_contents($user_file), true);
+        $users = json_decode(file_get_contents($users_file), true) ?: [];
         
-        if (!password_verify($current_password, $user_data['password'] ?? '')) {
+        if (!isset($users[$username])) {
+            $error = 'User not found.';
+        } elseif (!password_verify($current_password, $users[$username]['password'] ?? '')) {
             $error = 'Current password is incorrect.';
         } elseif ($new_password !== $confirm_password) {
             $error = 'New passwords do not match.';
         } elseif (strlen($new_password) < 4) {
             $error = 'Password must be at least 4 characters.';
         } else {
-            $user_data['password'] = password_hash($new_password, PASSWORD_DEFAULT);
-            if (file_put_contents($user_file, json_encode($user_data, JSON_PRETTY_PRINT))) {
+            $users[$username]['password'] = password_hash($new_password, PASSWORD_DEFAULT);
+            if (file_put_contents($users_file, json_encode($users, JSON_PRETTY_PRINT))) {
                 $message = 'Password updated successfully.';
             } else {
-                $error = 'Failed to write to user file. Check permissions.';
+                $error = 'Failed to write to users file. Check permissions.';
             }
         }
     }

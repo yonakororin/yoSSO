@@ -2,27 +2,34 @@
 require_once __DIR__ . '/../shared/session_config.php';
 session_start();
 
-$users_dir = __DIR__ . '/../mnguser/data/users/';
+// Use yoSSO's own user data file
+$users_file = __DIR__ . '/data/users.json';
 $codes_file = __DIR__ . '/data/codes.json';
 
 // Initialize data files if not exist
 if (!file_exists(__DIR__ . '/data')) mkdir(__DIR__ . '/data');
-// if (!file_exists($users_file)) ... (No longer creating users.json)
+if (!file_exists($users_file)) file_put_contents($users_file, '{}');
 if (!file_exists($codes_file)) file_put_contents($codes_file, '{}');
 
+// Auto-create default admin user if users.json is empty
+$existing_users = json_decode(file_get_contents($users_file), true) ?: [];
+if (empty($existing_users)) {
+    $default_users = [
+        'admin' => [
+            'password' => password_hash('admin', PASSWORD_DEFAULT), // Default password: admin
+            'name' => 'Admin User'
+        ]
+    ];
+    file_put_contents($users_file, json_encode($default_users, JSON_PRETTY_PRINT));
+}
+
 function get_users() {
-    global $users_dir;
-    $users = [];
-    if (is_dir($users_dir)) {
-        $files = glob($users_dir . '*.json');
-        foreach ($files as $file) {
-            $data = json_decode(file_get_contents($file), true);
-            if ($data && isset($data['username'])) {
-                $users[$data['username']] = $data;
-            }
-        }
+    global $users_file;
+    if (file_exists($users_file)) {
+        $data = json_decode(file_get_contents($users_file), true);
+        return $data ?: [];
     }
-    return $users;
+    return [];
 }
 
 function save_code($code, $username) {
