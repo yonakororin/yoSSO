@@ -1,0 +1,34 @@
+<?php
+/**
+ * 共有セッション設定
+ * yoSSO セットアップにより生成
+ * 
+ * このファイルは同一ドメイン下のすべてのツール間で
+ * セッションCookieを共有できるようにします
+ * （yoSSO, yoAdminPortal, yoAdminBuilder など）
+ */
+
+// セッションが開始されていない場合のみ設定
+if (session_status() == PHP_SESSION_NONE) {
+    $cookieParams = session_get_cookie_params();
+    
+    // セッション有効期限（秒）
+    // 0 = ブラウザを閉じるまで（デフォルト）
+    // 3600 = 1時間
+    // 86400 = 24時間
+    // 604800 = 1週間
+    $sessionLifetime = 0;
+    
+    // ルートパス '/' を指定することで、すべてのアプリがセッションを共有
+    session_set_cookie_params(
+        $sessionLifetime,
+        '/', 
+        $cookieParams["domain"], 
+        $cookieParams["secure"], 
+        $cookieParams["httponly"]
+    );
+    
+    // 共通のセッション名（オプション - デフォルトは PHPSESSID）
+    // session_name('MNGTOOLS_SESS');
+}
+?>
