@@ -27,7 +27,7 @@ function get_users() {
     global $users_file;
     $users = [];
     
-    // 1. yoSSO のユーザーデータを読み込み
+    // 1. yoSSO のユーザーデータを読み込み（優先）
     if (file_exists($users_file)) {
         $data = json_decode(file_get_contents($users_file), true);
         $users = $data ?: [];
@@ -35,17 +35,20 @@ function get_users() {
     
     // 2. mnguser のユーザーデータも統合
     // mnguser で作成されたユーザーも yoSSO でログインできるようにする
+    // ただし、yoSSO に既に存在するユーザーは上書きしない
     $mnguser_dir = dirname(__DIR__) . '/adminTools/mnguser/data/users/';
     if (is_dir($mnguser_dir)) {
         foreach (glob($mnguser_dir . '*.json') as $file) {
             $user_data = json_decode(file_get_contents($file), true);
             if ($user_data && isset($user_data['username']) && isset($user_data['password'])) {
                 $username = $user_data['username'];
-                // mnguser のデータが優先（既存ユーザーを上書き）
-                $users[$username] = [
-                    'password' => $user_data['password'],
-                    'name' => $user_data['name'] ?? $username
-                ];
+                // yoSSO に既に存在するユーザーは上書きしない（yoSSO側のパスワードを優先）
+                if (!isset($users[$username])) {
+                    $users[$username] = [
+                        'password' => $user_data['password'],
+                        'name' => $user_data['name'] ?? $username
+                    ];
+                }
             }
         }
     }
